@@ -33,6 +33,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="&lt;Read Buffer>" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -70,6 +71,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Bluetooth OFF" />
+    <Button
+        android:id="@+id/paired_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Show paired Devices" />
 
     <Button
         android:id="@+id/discover"
