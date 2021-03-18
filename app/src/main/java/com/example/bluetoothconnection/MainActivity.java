@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,13 +36,8 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -225,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
                 mBTAdapter.startDiscovery();
                 Toast.makeText(getApplicationContext(), "Discovery started", Toast.LENGTH_SHORT).show();
                 registerReceiver(blReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+                Log.d(TAG, "bbbbbbbbbbbbbbbb");
             } else {
                 Toast.makeText(getApplicationContext(), "Bluetooth not on", Toast.LENGTH_SHORT).show();
             }
@@ -235,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            Log.d(TAG, "asdgasgsadgasgasdg");
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // add the name to the list
@@ -271,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
             // Get the device MAC address, which is the last 17 chars in the View
             String info = ((TextView) view).getText().toString();
             final String address = info.substring(info.length() - 17);
-            final String name = info.substring(0, info.length() - 17);
+//            final String name = info.substring(0, info.length() - 17);
 
             // Spawn a new thread to avoid blocking the GUI one
             new Thread() {
@@ -339,11 +335,12 @@ public class MainActivity extends AppCompatActivity {
             } catch (NullPointerException e) {
                 Log.d(TAG, "MUIEEEEEE");
                 try {
+                    assert bluetoothDevice != null;
                     tmp = bluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID);
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-            } catch (IOException e) {
+            } catch (IOException ignored) {
             }
 
             /*--------------------------------------------------------------------------------------------------------------- */
@@ -364,7 +361,6 @@ public class MainActivity extends AppCompatActivity {
 
             /*--------------------------------------------------------------------------------------------------------------- */
             mmSocket = tmp;
-
         }
 
         public void run() {
@@ -414,7 +410,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
-            } catch (IOException e) {
+            } catch (IOException ignored) {
             }
 
             mmInStream = tmpIn;
@@ -460,7 +456,7 @@ public class MainActivity extends AppCompatActivity {
         public void cancel() {
             try {
                 mmSocket.close();
-            } catch (IOException e) {
+            } catch (IOException ignored) {
             }
         }
     }
