@@ -22,7 +22,7 @@
             android:layout_weight="0.1"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="@string/rx"
+            android:text="RX:"
             android:textStyle="bold" />
 
         <TextView
@@ -32,7 +32,7 @@
             android:layout_weight="0.9"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="@string/lt_read_buffer" />
+            android:text="&lt;Read Buffer>" />
     </LinearLayout>
 
     <LinearLayout
@@ -46,7 +46,7 @@
             android:layout_weight="0.1"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="@string/status"
+            android:text="Status:"
             android:textStyle="bold" />
 
         <TextView
@@ -56,26 +56,26 @@
             android:layout_weight="0.9"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="@string/lt_bluetooth_status" />
+            android:text="&lt;Bluetooth Status>" />
     </LinearLayout>
 
     <Button
         android:id="@+id/scan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bluetooth_on" />
+        android:text="Bluetooth ON" />
 
     <Button
         android:id="@+id/off"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bluetooth_off" />
+        android:text="Bluetooth OFF" />
 
     <Button
         android:id="@+id/discover"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/discover_new_devices" />
+        android:text="Discover New Devices" />
 
     <Button
         android:id="@+id/send_data"

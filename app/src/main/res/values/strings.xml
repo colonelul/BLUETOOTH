@@ -1,14 +1,7 @@
 <resources>
 
-    <string name="app_name">Bluetooth</string>
+    <string name="app_name">Simple Bluetooth</string>
     <string name="send_data">send</string>
     <string name="unpair">unpair</string>
-    <string name="rx">RX:</string>
-    <string name="status">Status:</string>
-    <string name="lt_read_buffer"><![CDATA[<Read Buffer>]]></string>
-    <string name="lt_bluetooth_status"><![CDATA[<Bluetooth Status>]]></string>
-    <string name="bluetooth_on">Bluetooth ON</string>
-    <string name="bluetooth_off">Bluetooth OFF</string>
-    <string name="discover_new_devices">Discover New Devices</string>
 
 </resources>

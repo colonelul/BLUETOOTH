@@ -1,7 +1,11 @@
 package com.example.bluetoothconnection;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import android.Manifest;
+
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
@@ -17,8 +21,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -28,21 +30,20 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.util.Set;
 import java.util.UUID;
 
-import static android.content.ContentValues.TAG;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     // 0000FFE1
-    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private static final UUID MY_UUID = UUID.fromString("0000FFE1-0000-1000-8000-00805F9B34FB");
 
     // #defines for identifying shared types between calling functions
     private final static int REQUEST_ENABLE_BT = 1; // used to identify adding bluetooth names
@@ -295,36 +296,36 @@ public class MainActivity extends AppCompatActivity {
             BluetoothSocket tmp = null;
 //            UUID uuid = bluetoothDevice.getUuids()[0].getUuid();
             // String MY_UUID = UUID.randomUUID().toString();
+//
+//            try {
+//                // Use the UUID of the device that discovered // TODO Maybe need extra device object
+//                if (bluetoothDevice != null)
+//                {
+//                    Log.i(TAG, "Device UUID: " + bluetoothDevice.getUuids()[0].getUuid());
+//                    tmp = bluetoothDevice.createRfcommSocketToServiceRecord(bluetoothDevice.getUuids()[0].getUuid());
+//
+//                }
+//                else Log.d(TAG, "Device is null.");
+//            }
+//            catch (NullPointerException e)
+//            {
+//                Log.d(TAG, "MUIEEEEEE");
+//                try {
+//                    tmp = bluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID);
+//                } catch (IOException e1) {
+//                    e1.printStackTrace();
+//                }
+//            }
+//            catch (IOException e) { }
 
             try {
-                // Use the UUID of the device that discovered // TODO Maybe need extra device object
-                if (bluetoothDevice != null)
-                {
-                    Log.i(TAG, "Device UUID: " + bluetoothDevice.getUuids()[0].getUuid());
-                    tmp = bluetoothDevice.createRfcommSocketToServiceRecord(bluetoothDevice.getUuids()[0].getUuid());
 
-                }
-                else Log.d(TAG, "Device is null.");
-            }
-            catch (NullPointerException e)
-            {
-                Log.d(TAG, "MUIEEEEEE");
-                try {
-                    tmp = bluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            }
-            catch (IOException e) { }
+                tmp = bluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID);
+                // tmp = bluetoothDevice.createInsecureRfcommSocketToServiceRecord(uuid); //arduino connect
 
-//            try {
-//
-//                tmp = bluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID);
-//               // tmp = bluetoothDevice.createInsecureRfcommSocketToServiceRecord(uuid); //arduino connect
-//
-//            } catch (IOException e) {
-//                Log.e(TAG, "Socket's create() method failed", e);
-//            }
+            } catch (IOException e) {
+                Log.e(TAG, "Socket's create() method failed", e);
+            }
             mmSocket = tmp;
         }
 
