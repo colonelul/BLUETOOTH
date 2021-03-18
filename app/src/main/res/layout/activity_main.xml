@@ -33,7 +33,6 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="&lt;Read Buffer>" />
-
     </LinearLayout>
 
     <LinearLayout
@@ -71,6 +70,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Bluetooth OFF" />
+
     <Button
         android:id="@+id/paired_btn"
         android:layout_width="match_parent"
@@ -82,18 +82,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Discover New Devices" />
-
-    <Button
-        android:id="@+id/send_data"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/send_data" />
-
-    <Button
-        android:id="@+id/unpair"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/unpair" />
 
     <ListView
         android:id="@+id/devices_list_view"

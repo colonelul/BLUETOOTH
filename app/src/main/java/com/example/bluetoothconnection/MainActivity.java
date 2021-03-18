@@ -1,8 +1,10 @@
 package com.example.bluetoothconnection;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
 import android.Manifest;
 
 
@@ -21,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -34,8 +37,13 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -44,8 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     // 0000FFE1
-    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    private Set<BluetoothDevice> mPairedDevices;
+    private static final UUID MY_UUID = UUID.fromString("0000111E-0000-1000-8000-00805F9B34FB");
 
     // #defines for identifying shared types between calling functions
     private final static int REQUEST_ENABLE_BT = 1; // used to identify adding bluetooth names
@@ -65,23 +72,23 @@ public class MainActivity extends AppCompatActivity {
     public static BluetoothSocket mmSocket; // bi-directional client-to-client data path
     public Boolean flagConnection = false;
     public byte flag = 0;
-    private Button mListPairedDevicesBtn;
 
 
-    @SuppressLint("PrivateApi")
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @SuppressLint({"PrivateApi", "SetTextI18n"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mListPairedDevicesBtn = (Button)findViewById(R.id.paired_btn);
+        Button mListPairedDevicesBtn = (Button) findViewById(R.id.paired_btn);
 
         mBluetoothStatus = (TextView) findViewById(R.id.bluetooth_status);
         mReadBuffer = (TextView) findViewById(R.id.read_buffer);
         Button mScanBtn = (Button) findViewById(R.id.scan);
         Button mOffBtn = (Button) findViewById(R.id.off);
         Button mDiscoverBtn = (Button) findViewById(R.id.discover);
-        Button send_btn = (Button) findViewById(R.id.send_data);
-        Button unpair_bt = (Button) findViewById(R.id.unpair);
+//        Button send_btn = (Button) findViewById(R.id.send_data);
+//        Button unpair_bt = (Button) findViewById(R.id.unpair);
 
         mBTArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
         mBTAdapter = BluetoothAdapter.getDefaultAdapter(); // get a handle on the bluetooth radio
@@ -144,21 +151,21 @@ public class MainActivity extends AppCompatActivity {
             });
             mListPairedDevicesBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v){
+                public void onClick(View v) {
                     listPairedDevices();
                 }
             });
-            send_btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (flagConnection) { //if we have connection to the bluetoothmodule
-                        String sendtxt = "1";
-                        connectedThread.write(sendtxt);
-                    } else {
-                        Toast.makeText(MainActivity.this, "Something went wrong ", Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
+//            send_btn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    if (flagConnection) { //if we have connection to the bluetoothmodule
+//                        String sendtxt = "1";
+//                        connectedThread.write(sendtxt);
+//                    } else {
+//                        Toast.makeText(MainActivity.this, "Something went wrong ", Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//            });
 
 //            unpair_bt.setOnClickListener(new View.OnClickListener() {
 //                @Override
@@ -207,20 +214,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void listPairedDevices(){
-        mBTArrayAdapter.clear();
-        mPairedDevices = mBTAdapter.getBondedDevices();
-        if(mBTAdapter.isEnabled()) {
-            // put it's one to the adapter
-            for (BluetoothDevice device : mPairedDevices)
-                mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-
-            Toast.makeText(getApplicationContext(), "Show Paired Devices", Toast.LENGTH_SHORT).show();
-        }
-        else
-            Toast.makeText(getApplicationContext(), "Bluetooth not on", Toast.LENGTH_SHORT).show();
-    }
-
     private void discover() {
         // Check if the device is already discovering
         if (mBTAdapter.isDiscovering()) {
@@ -245,13 +238,24 @@ public class MainActivity extends AppCompatActivity {
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // add the name to the list
-
                 mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
                 mBTArrayAdapter.notifyDataSetChanged();
-
             }
         }
     };
+
+    private void listPairedDevices() {
+        mBTArrayAdapter.clear();
+        Set<BluetoothDevice> mPairedDevices = mBTAdapter.getBondedDevices();
+        if (mBTAdapter.isEnabled()) {
+            // put it's one to the adapter
+            for (BluetoothDevice device : mPairedDevices)
+                mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+
+            Toast.makeText(getApplicationContext(), "Show Paired Devices", Toast.LENGTH_SHORT).show();
+        } else
+            Toast.makeText(getApplicationContext(), "Bluetooth not on", Toast.LENGTH_SHORT).show();
+    }
 
     private final AdapterView.OnItemClickListener mDeviceClickListener = new AdapterView.OnItemClickListener() {
         @SuppressLint("SetTextI18n")
@@ -279,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
 
                     pairDevice(device);
 
-                    createConnectThread = new CreateConnectThread(mBTAdapter,address);
+                    createConnectThread = new CreateConnectThread(mBTAdapter, address);
                     createConnectThread.start();
 
                 }
@@ -318,39 +322,49 @@ public class MainActivity extends AppCompatActivity {
 
             BluetoothDevice bluetoothDevice = bluetoothAdapter.getRemoteDevice(address);
             BluetoothSocket tmp = null;
+
 //            UUID uuid = bluetoothDevice.getUuids()[0].getUuid();
             // String MY_UUID = UUID.randomUUID().toString();
-//
+
+            /*--------------------------------------------------------------------------------------------------------------- */
+
+
             try {
                 // Use the UUID of the device that discovered // TODO Maybe need extra device object
-                if (bluetoothDevice != null)
-                {
+                if (bluetoothDevice != null) {
                     Log.i(TAG, "Device UUID: " + bluetoothDevice.getUuids()[0].getUuid());
                     tmp = bluetoothDevice.createRfcommSocketToServiceRecord(bluetoothDevice.getUuids()[0].getUuid());
 
-                }
-                else Log.d(TAG, "Device is null.");
-            }
-            catch (NullPointerException e)
-            {
+                } else Log.d(TAG, "Device is null.");
+            } catch (NullPointerException e) {
                 Log.d(TAG, "MUIEEEEEE");
                 try {
                     tmp = bluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID);
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
+            } catch (IOException e) {
             }
-            catch (IOException e) { }
+
+            /*--------------------------------------------------------------------------------------------------------------- */
+
 
 //            try {
 //
 //                tmp = bluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID);
-//                // tmp = bluetoothDevice.createInsecureRfcommSocketToServiceRecord(uuid); //arduino connect
+//               //  tmp = bluetoothDevice.createInsecureRfcommSocketToServiceRecord(MY_UUID); //arduino connect
 //
 //            } catch (IOException e) {
 //                Log.e(TAG, "Socket's create() method failed", e);
 //            }
-//            mmSocket = tmp;
+
+            /*--------------------------------------------------------------------------------------------------------------- */
+
+
+
+            /*--------------------------------------------------------------------------------------------------------------- */
+            mmSocket = tmp;
+
         }
 
         public void run() {
@@ -400,7 +414,8 @@ public class MainActivity extends AppCompatActivity {
             try {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
-            } catch (IOException e) { }
+            } catch (IOException e) {
+            }
 
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
@@ -417,10 +432,10 @@ public class MainActivity extends AppCompatActivity {
 
                     buffer[bytes] = (byte) mmInStream.read();
                     String readMessage;
-                    if (buffer[bytes] == '\n'){
-                        readMessage = new String(buffer,0,bytes);
-                        Log.e("Message",readMessage);
-                        handler.obtainMessage(MESSAGE_READ,readMessage).sendToTarget();
+                    if (buffer[bytes] == '\n') {
+                        readMessage = new String(buffer, 0, bytes);
+                        Log.e("Message", readMessage);
+                        handler.obtainMessage(MESSAGE_READ, readMessage).sendToTarget();
                         bytes = 0;
                     } else {
                         bytes++;
@@ -438,14 +453,15 @@ public class MainActivity extends AppCompatActivity {
             try {
                 mmOutStream.write(bytes);
             } catch (IOException e) {
-                Log.e("Send Error","Unable to send message",e);
+                Log.e("Send Error", "Unable to send message", e);
             }
         }
 
         public void cancel() {
             try {
                 mmSocket.close();
-            } catch (IOException e) { }
+            } catch (IOException e) {
+            }
         }
     }
 
@@ -453,7 +469,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // Terminate Bluetooth Connection and close app
-        if (createConnectThread != null){
+        if (createConnectThread != null) {
             createConnectThread.cancel();
         }
         Intent a = new Intent(Intent.ACTION_MAIN);
